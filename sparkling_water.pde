@@ -23,7 +23,7 @@ void setup() {
     particles.add(new Particle());
   }
   
-  frameRate(5);
+  frameRate(12);
 }
 
 void draw() {
@@ -31,7 +31,7 @@ void draw() {
   image(img, 0, 0, 640, 360);
   
   for (Particle particle : particles) {
-    particle.init();
+    particle.tick();
     particle.draw();
   }
 }

@@ -4,6 +4,12 @@ class Particle {
   float z;
   float size;
   int timeElapsed;
+  int ANIMATION_TIME = 9;
+  
+  Particle() {
+    init();
+    timeElapsed = (int)random(ANIMATION_TIME);
+  }
   
   void init() {    
     y = random(223,height);
@@ -28,13 +34,24 @@ class Particle {
     } else {
       x = width/2 + random(-width /2 * (360 - 223), width /2 * (360 - 223)) / z;
     }
+    
+    timeElapsed = 0;
   }
   
   void draw() {
-    ellipse(x, y, 7*size, size);
+    if (timeElapsed < ANIMATION_TIME / 2) {
+      ellipse(x, y, lerp(0, 14 * size, (float)timeElapsed / (ANIMATION_TIME / 2)), lerp(0, 2 * size, (float)timeElapsed / (ANIMATION_TIME / 2)));
+    } else {
+      ellipse(x, y, lerp(14 * size, 0, (float)(timeElapsed - ANIMATION_TIME / 2) / (ANIMATION_TIME / 2)), lerp(2 * size, 0, (float)(timeElapsed - ANIMATION_TIME / 2) / (ANIMATION_TIME / 2)));
+    }
   }
   
   void tick() {
+    timeElapsed++;
+    
+    if (timeElapsed >= ANIMATION_TIME) {
+      init();
+    }
   }
   
   void resetAnimation() {
