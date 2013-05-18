@@ -19,7 +19,7 @@ void setup() {
   noStroke();
   fill(255,255,255);
   
-  for (int i = 0; i < 1000; i++) {
+  for (int i = 0; i < 200; i++) {
     particles.add(new Particle());
   }
   

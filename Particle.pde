@@ -19,10 +19,10 @@ class Particle {
     // z goes from 1 to 50
     size = 1.0 / z;
     
-    if (random(5) < 3) {
-      x = 344 + randomNormal(0, width / 20) / z;
+    if (random(6) < 4) {
+      x = 344 + randomNormal(0, width / 24) / z;
     } else {
-      x = 344 + randomNormal(0, width / 3) / z;
+      x = 344 + randomNormal(0, width / 4) / z;
     }
     timeElapsed = 0;
   }
