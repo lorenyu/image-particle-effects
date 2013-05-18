@@ -4,7 +4,7 @@ class Particle {
   float z;
   float size;
   int timeElapsed;
-  int ANIMATION_TIME = 9;
+  int ANIMATION_TIME = 11;
   
   Particle() {
     init();
@@ -19,22 +19,11 @@ class Particle {
     // z goes from 1 to 50
     size = 1.0 / z;
     
-    // 30, 50, 100, 1000
-    int i = (int)random(0, 30 + 30 + 30 + 50 + 100 + 1000);
-    if (i < 30) {
-      x = 350 + random(-150, 150) / z;
-    } else if (i < 30 + 30) {
-      x = 350 + random(-100, 100) / z;
-    } else if (i < 30 + 30 + 30) {
-      x = 350 + random(-80, 80) / z;
-    } else if (i < 30 + 30 + 30 + 50) {
-      x = 350 + random(-35, 35) / z;
-    } else if (i < 30 + 30 + 30 + 50 + 100) {
-      x = 350 + random(-15, 15) / z;
+    if (random(5) < 3) {
+      x = 344 + randomNormal(0, width / 20) / z;
     } else {
-      x = width/2 + random(-width /2 * (360 - 223), width /2 * (360 - 223)) / z;
+      x = 344 + randomNormal(0, width / 3) / z;
     }
-    
     timeElapsed = 0;
   }
   
