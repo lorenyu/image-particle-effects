@@ -9,7 +9,7 @@
     </style>
   </head>
   <body>
-    <img src="Clouds_over_the_Atlantic_Ocean.jpg" width="1024">
+    <img src="Clouds_over_the_Atlantic_Ocean.jpg" width="640" height="360">
     <script>
       $(window).on('load', function() {
         var $img = $('img')
@@ -22,6 +22,7 @@
         var $canvas = $('canvas')
           , canvas = $canvas.get(0)
           , ctx = canvas.getContext('2d');
+
         ctx.drawImage(img, 0, 0, width, height);
       });
 
