@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <script src="js/lib/jquery-2.0.2.js"></script>
+    <script src="js/lib/underscore.js"></script>
+    <style type="text/css">
+      canvas {
+        border: dotted 1px #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <img src="Clouds_over_the_Atlantic_Ocean.jpg" width="1024">
+    <script>
+      $(window).on('load', function() {
+        var $img = $('img')
+          , img = $img.get(0)
+          , imgSrc = $img.attr('src')
+          , width = $img.width()
+          , height = $img.height();
+
+        $img.replaceWith(_.template('<canvas width="<%= width %>" height="<%= height %>">')({ width: width, height: height}));
+        var $canvas = $('canvas')
+          , canvas = $canvas.get(0)
+          , ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+      });
+
+    </script>
+  </body>
+</html>
