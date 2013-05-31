@@ -11,6 +11,19 @@
   <body>
     <img src="Clouds_over_the_Atlantic_Ocean.jpg" width="640" height="360">
     <script>
+      var DrawUtil = {
+        ellipse: function(ctx, x, y, width, height) {
+          ctx.save();
+
+          ctx.translate(x, y);
+          ctx.scale(width, height);
+          ctx.beginPath();
+          ctx.arc(0, 0, 1, 0, 2 * Math.PI);
+          ctx.fill();
+
+          ctx.restore();
+        }
+      };
       var MathUtil = {
         lerp: function(start, stop, amt) {
           return start + (stop - start) * amt;
@@ -52,7 +65,9 @@
           };
         })()
       };
-      var Particle = function(xMax, yMin, yMax) {
+      var Particle = function(drawingContext, xMax, yMin, yMax) {
+        this.ctx = drawingContext;
+
         this.x = 0;
         this.y = 0;
         this.z = 0;
@@ -80,6 +95,28 @@
         }
         this.timeElapsed = 0;
       };
+      Particle.prototype.tick = function() {
+        this.timeElapsed++;
+
+        if (this.timeElapsed >= Particle.ANIMATION_TIME) {
+          this.init();
+        }
+      };
+      Particle.prototype.draw = function() {
+        var ctx = this.ctx
+          , x = this.x
+          , y = this.y
+          , size = this.size
+          , timeElapsed = this.timeElapsed
+          , ANIMATION_TIME = Particle.ANIMATION_TIME
+          , lerp = MathUtil.lerp;
+
+        if (timeElapsed < ANIMATION_TIME / 2) {
+          DrawUtil.ellipse(ctx, x, y, lerp(0, 14 * size, timeElapsed / (ANIMATION_TIME / 2)), lerp(0, 2 * size, timeElapsed / (ANIMATION_TIME / 2)));
+        } else {
+          DrawUtil.ellipse(ctx, x, y, lerp(14 * size, 0, (timeElapsed - ANIMATION_TIME / 2) / (ANIMATION_TIME / 2)), lerp(2 * size, 0, (timeElapsed - ANIMATION_TIME / 2) / (ANIMATION_TIME / 2)));
+        }
+      };
 
       $(window).on('load', function() {
         var $img = $('img')
@@ -87,20 +124,33 @@
           , imgSrc = $img.attr('src')
           , width = $img.width()
           , height = $img.height()
-          , particles = [];
+          , particles = []
+          , numParticles = 200;
 
         $img.replaceWith(_.template('<canvas width="<%= width %>" height="<%= height %>">')({ width: width, height: height}));
         var $canvas = $('canvas')
           , canvas = $canvas.get(0)
           , ctx = canvas.getContext('2d');
 
-        ctx.drawImage(img, 0, 0, width, height);
-
         ctx.lineWidth = 0;
         ctx.fillStyle = 'rgb(255,255,255)';
-        for (var i = 0; i < 200; i++) {
-          particles.push(new Particle(width, 223, height));
+        for (var i = 0; i < numParticles; i++) {
+          particles.push(new Particle(ctx, width, 223, height));
         }
+
+        function draw() {
+          ctx.drawImage(img, 0, 0, width, height);
+          // ctx.fillRect(Math.random() * 300, Math.random() * 300, 10, 10);
+          for (var i = 0, n = particles.length; i < n; i++) {
+            var particle = particles[i];
+            particle.tick();
+            particle.draw();
+          }
+
+          _.delay(requestAnimationFrame, 80, draw);
+        }
+
+        requestAnimationFrame(draw);
       });
 
     </script>
