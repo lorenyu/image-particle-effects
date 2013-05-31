@@ -17,8 +17,8 @@ float randomNormal(float mean, float stddev) {
   
   float u = random(1);
   float v = random(1);
-  float x = sqrt(-2 * log(u)) * cos(2 * TWO_PI * v);
-  next = sqrt(-2 * log(u)) * sin(2 * TWO_PI * v);
+  float x = sqrt(-2 * log(u)) * cos(TWO_PI * v);
+  next = sqrt(-2 * log(u)) * sin(TWO_PI * v);
   next = mean + next * stddev;
   hasNext = true;
   
