@@ -144,16 +144,11 @@ var SparklingWaterEffect = function(img, options) {
     , particles = []
     , canvas = document.createElement('canvas')
     , ctx = canvas.getContext('2d')
-    , numParticles = 200
     , frameRate = 12
     , options = options || {};
 
   canvas.setAttribute('width', width);
   canvas.setAttribute('height', height);
-
-  for (var i = 0; i < numParticles; i++) {
-    particles.push(new Particle(ctx));
-  }
 
   var next = img.nextSibling
     , parent = img.parentNode;
@@ -212,7 +207,11 @@ SparklingWaterEffect.prototype.draw = function() {
 };
 
 SparklingWaterEffect.prototype.setOptions = function(options) {
-  var options = options || {};
+  var options = options || {}
+    , numParticles = options.numSparkles || 200
+    , particles = this.particles
+    , ctx = this.ctx;
+
   var particleOptions = {
     xMax: this.width,
     xMean: options.xMean || ( this.width / 2 ),
@@ -221,9 +220,20 @@ SparklingWaterEffect.prototype.setOptions = function(options) {
     maxHeight: options.maxSparkleHeight || 2,
     maxWidth: options.maxSparkleWidth || 14
   };
-  for (var i = 0, n = this.particles.length; i < n; i++) {
-    this.particles[i].setOptions(particleOptions);
+  if (numParticles < particles.length) {
+    particles.splice(numParticles, particles.length - numParticles);
   }
+  for (var i = 0, n = Math.min(particles.length, numParticles); i < n; i++) {
+    particles[i].setOptions(particleOptions);
+  }
+  if (particles.length < numParticles) {
+    for (var i = 0; i < numParticles - particles.length; i++) {
+      var particle = new Particle(ctx, particleOptions);
+      particle.timeElapsed = parseInt(Random.random(Particle.ANIMATION_TIME));
+      particles.push(particle);
+    } 
+  }
+  
   this.options = options;
   return this;
 };
