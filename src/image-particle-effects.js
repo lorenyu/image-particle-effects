@@ -240,8 +240,8 @@ var SparklingWaterEffectConfigurator = function(sparklingWaterEffect) {
   };
 }
 
-SparklingWaterEffectConfigurator.prototype.startConfiguring = function() {
-  if (this.isConfiguring) {
+SparklingWaterEffectConfigurator.prototype.startConfiguringPosition = function() {
+  if (this.configuringStatus) {
     return;
   }
 
@@ -253,12 +253,12 @@ SparklingWaterEffectConfigurator.prototype.startConfiguring = function() {
       self.stopConfiguring();
     });
   }, 0);
-  this.isConfiguring = true;
+  this.configuringStatus = 'position';
 };
 
 SparklingWaterEffectConfigurator.prototype.stopConfiguring = function() {
   $(document).off('mousemove', this.onMouseMove);
-  this.isConfiguring = false;
+  this.configuringStatus = null;
 };
 
 var imageParticleEffects = {

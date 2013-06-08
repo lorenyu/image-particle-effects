@@ -10,17 +10,17 @@
     </style>
   </head>
   <body>
-    <img src="Clouds_over_the_Atlantic_Ocean.jpg" width="640" height="360">
+    <img src="Clouds_over_the_Atlantic_Ocean.jpg" width="900" height="604">
     <button class="configure">Configure Sparkling Image Effect</button>
     <script>
       $(window).on('load', function() {
         var $img = $('img')
           , img = $img.get(0);
 
-        var effect = new imageParticleEffects.SparklingWaterEffect(img).setOptions({xMean: 349, yMin: 227}).startDrawing();
+        var effect = new imageParticleEffects.SparklingWaterEffect(img).setOptions({xMean: 488, yMin: 381}).startDrawing();
 
         $('.configure').click(function() {
-          new imageParticleEffects.SparklingWaterEffectConfigurator(effect).startConfiguring();
+          new imageParticleEffects.SparklingWaterEffectConfigurator(effect).startConfiguringPosition();
         });
       });
     </script>
