@@ -71,7 +71,9 @@ Particle.prototype.init = function() {
   var yMin = this.options.yMin
     , yMax = this.options.yMax
     , xMax = this.options.xMax
-    , xMean = this.options.xMean;
+    , xMean = this.options.xMean
+    , maxHeight = this.options.maxHeight || 2
+    , maxWidth = this.options.maxWidth || 14;
 
   if (typeof yMin === 'undefined') {
     throw new Error('Missing required option yMin');
@@ -92,7 +94,8 @@ Particle.prototype.init = function() {
   // z is in range (0,1]
   this.z = MathUtil.lerp(1, 30, this.z);
   // z goes from 1 to 50
-  this.size = 1.0 / this.z;
+  this.width = maxWidth / this.z;
+  this.height = maxHeight / this.z;
   
   if (Random.random(6) < 4) {
     this.x = xMean + Random.randomNormal(0, xMax / 24) / this.z;
@@ -112,15 +115,16 @@ Particle.prototype.draw = function() {
   var ctx = this.ctx
     , x = this.x
     , y = this.y
-    , size = this.size
+    , width = this.width
+    , height = this.height
     , timeElapsed = this.timeElapsed
     , ANIMATION_TIME = Particle.ANIMATION_TIME
     , lerp = MathUtil.lerp;
 
   if (timeElapsed < ANIMATION_TIME / 2) {
-    DrawUtil.ellipse(ctx, x, y, lerp(0, 14 * size, timeElapsed / (ANIMATION_TIME / 2)), lerp(0, 2 * size, timeElapsed / (ANIMATION_TIME / 2)));
+    DrawUtil.ellipse(ctx, x, y, lerp(0, width, timeElapsed / (ANIMATION_TIME / 2)), lerp(0, height, timeElapsed / (ANIMATION_TIME / 2)));
   } else {
-    DrawUtil.ellipse(ctx, x, y, lerp(14 * size, 0, (timeElapsed - ANIMATION_TIME / 2) / (ANIMATION_TIME / 2)), lerp(2 * size, 0, (timeElapsed - ANIMATION_TIME / 2) / (ANIMATION_TIME / 2)));
+    DrawUtil.ellipse(ctx, x, y, lerp(width, 0, (timeElapsed - ANIMATION_TIME / 2) / (ANIMATION_TIME / 2)), lerp(height, 0, (timeElapsed - ANIMATION_TIME / 2) / (ANIMATION_TIME / 2)));
   }
 };
 Particle.prototype.setOptions = function(options) {
