@@ -71,7 +71,7 @@ Particle.prototype.init = function() {
   var yMin = this.options.yMin
     , yMax = this.options.yMax
     , xMax = this.options.xMax
-    , xMean = this.options.xMean || ( xMax / 2 )
+    , xMean = this.options.xMean;
 
   if (typeof yMin === 'undefined') {
     throw new Error('Missing required option yMin');
@@ -81,6 +81,9 @@ Particle.prototype.init = function() {
   }
   if (typeof xMax === 'undefined') {
     throw new Error('Missing required option xMax');
+  }
+  if (typeof xMean === 'undefined') {
+    throw new Error('Missing required option xMean');
   }
 
 
@@ -175,6 +178,8 @@ SparklingWaterEffect.prototype.startDrawing = function() {
     setTimeout(scheduleDraw, 1000 / self.frameRate);
   };
   scheduleDraw();
+
+  return this;
 };
 
 SparklingWaterEffect.prototype.draw = function() {
@@ -200,6 +205,7 @@ SparklingWaterEffect.prototype.setOptions = function(options) {
   var options = options || {};
   var particleOptions = {
     xMax: this.width,
+    xMean: options.xMean || ( this.width / 2 ),
     yMin: options.yMin || 0,
     yMax: options.yMax || this.height
   };
