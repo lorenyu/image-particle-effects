@@ -11,7 +11,9 @@
   </head>
   <body>
     <img src="Clouds_over_the_Atlantic_Ocean.jpg" width="900" height="604">
-    <button class="configure">Configure Sparkling Image Effect</button>
+    <button class="configure-position">Configure Position</button>
+    <button class="configure-size">Configure Sparkle Size</button>
+    <button class="configure-num-sparkles">Configure Number of Sparkles</button>
     <script>
       $(window).on('load', function() {
         var $img = $('img')
@@ -19,8 +21,14 @@
 
         var effect = new imageParticleEffects.SparklingWaterEffect(img).setOptions({xMean: 488, yMin: 381}).startDrawing();
 
-        $('.configure').click(function() {
-          new imageParticleEffects.SparklingWaterEffectConfigurator(effect).startConfiguringPosition();
+        $('.configure-position').click(function() {
+          new imageParticleEffects.SparklingWaterEffectConfigurator(effect).startConfiguring('position');
+        });
+        $('.configure-size').click(function() {
+          new imageParticleEffects.SparklingWaterEffectConfigurator(effect).startConfiguring('sparkle-size');
+        });
+        $('.configure-num-sparkles').click(function() {
+          new imageParticleEffects.SparklingWaterEffectConfigurator(effect).startConfiguring('num-sparkles');
         });
       });
     </script>

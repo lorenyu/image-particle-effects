@@ -218,8 +218,8 @@ SparklingWaterEffect.prototype.setOptions = function(options) {
     xMean: options.xMean || ( this.width / 2 ),
     yMin: options.yMin || 0,
     yMax: options.yMax || this.height,
-    maxHeight: options.maxParticleHeight || 2,
-    maxWidth: options.maxParticleWidth || 14
+    maxHeight: options.maxSparkleHeight || 2,
+    maxWidth: options.maxSparkleWidth || 14
   };
   for (var i = 0, n = this.particles.length; i < n; i++) {
     this.particles[i].setOptions(particleOptions);
@@ -234,21 +234,43 @@ var SparklingWaterEffectConfigurator = function(sparklingWaterEffect) {
   }
 
   this.effect = sparklingWaterEffect;
-  this.canvasX = $(this.effect.canvas).offset().left;
-  this.canvasY = $(this.effect.canvas).offset().top;
+  var $canvas = $(this.effect.canvas);
+  this.canvasX = $canvas.offset().left;
+  this.canvasY = $canvas.offset().top;
+  this.canvasWidth = $canvas.width();
+  this.canvasHeight = $canvas.height();
 
   var self = this;
   this.onMouseMove = function(e) {
-    var options = {
-      xMean: e.pageX - self.canvasX,
-      yMin: e.pageY - self.canvasY
-    };
+    var options = self.effect.options;
+    switch (self.configuringStatus) {
+      case 'position':
+        $.extend(options, {
+          xMean: e.pageX - self.canvasX,
+          yMin: e.pageY - self.canvasY
+        });
+        break;
+      case 'sparkle-size':
+        $.extend(options, {
+          maxSparkleHeight: ( e.pageY - self.canvasY ) / 100,
+          maxSparkleWidth: ( e.pageX - self.canvasX ) / 20
+        });
+        break;
+      case 'num-sparkles':
+        $.extend(options, {
+          numSparkles: ( e.pageX - self.canvasX ) + ( e.pageY - self.canvasY )
+        });
+        break;
+    }
     self.effect.setOptions(options);
     console.log(options);
   };
 }
 
-SparklingWaterEffectConfigurator.prototype.startConfiguringPosition = function() {
+/** 
+ * valid configuration types: 'position', 'sparkle-size', 'num-sparkles'
+ */
+SparklingWaterEffectConfigurator.prototype.startConfiguring = function(configurationType) {
   if (this.configuringStatus) {
     return;
   }
@@ -261,7 +283,7 @@ SparklingWaterEffectConfigurator.prototype.startConfiguringPosition = function()
       self.stopConfiguring();
     });
   }, 0);
-  this.configuringStatus = 'position';
+  this.configuringStatus = configurationType;
 };
 
 SparklingWaterEffectConfigurator.prototype.stopConfiguring = function() {
