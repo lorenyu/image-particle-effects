@@ -116,6 +116,16 @@ Particle.prototype.tick = function() {
   if (this.timeElapsed >= Particle.ANIMATION_TIME) {
     this.init();
   }
+
+  var pixels = this.ctx.getImageData(this.x - 1, this.y -1, 3, 3).data;
+
+  // Loop over each pixel and invert the color.
+  for (var i = 0, n = pix.length; i < n; i += 4) {
+    var r = pixels[i  ]
+      , g = pixels[i+1]
+      , b = pixels[i+2];
+    this.color = 'rgb(' + r + ',' + g + ',' + b + ')';
+  }
 };
 Particle.prototype.draw = function() {
   var ctx = this.ctx
@@ -126,6 +136,8 @@ Particle.prototype.draw = function() {
     , timeElapsed = this.timeElapsed
     , ANIMATION_TIME = Particle.ANIMATION_TIME
     , lerp = MathUtil.lerp;
+
+  ctx.fillStyle = this.color;
 
   if (timeElapsed < ANIMATION_TIME / 2) {
     DrawUtil.ellipse(ctx, x, y, lerp(0, width, timeElapsed / (ANIMATION_TIME / 2)), lerp(0, height, timeElapsed / (ANIMATION_TIME / 2)));
@@ -202,6 +214,10 @@ SparklingWaterEffect.prototype.draw = function() {
   for (var i = 0, n = particles.length; i < n; i++) {
     var particle = particles[i];
     particle.tick();
+  }
+
+  for (var i = 0, n = particles.length; i < n; i++) {
+    var particle = particles[i];
     particle.draw();
   }
 };
