@@ -216,9 +216,52 @@ SparklingWaterEffect.prototype.setOptions = function(options) {
   return this;
 };
 
+var SparklingWaterEffectConfigurator = function(sparklingWaterEffect) {
+  if (!jQuery) {
+    throw new Error('The SparklingWaterEffectConfigurator requires jQuery');
+  }
+
+  this.effect = sparklingWaterEffect;
+  this.canvasX = $(this.effect.canvas).offset().left;
+  this.canvasY = $(this.effect.canvas).offset().top;
+
+  var self = this;
+  this.onMouseMove = function(e) {
+    var options = {
+      xMean: e.pageX - self.canvasX,
+      yMin: e.pageY - self.canvasY
+    };
+    self.effect.setOptions(options);
+    console.log(options);
+  };
+}
+
+SparklingWaterEffectConfigurator.prototype.startConfiguring = function() {
+  if (this.isConfiguring) {
+    return;
+  }
+
+  var $ = jQuery
+    , self = this;
+  $(document).mousemove(this.onMouseMove);
+  setTimeout(function() {
+    $(document).click(function(e) {
+      self.stopConfiguring();
+    });
+  }, 0);
+  this.isConfiguring = true;
+};
+
+SparklingWaterEffectConfigurator.prototype.stopConfiguring = function() {
+  $(document).off('mousemove', this.onMouseMove);
+  this.isConfiguring = false;
+};
+
 var imageParticleEffects = {
 
   SparklingWaterEffect: SparklingWaterEffect,
+
+  SparklingWaterEffectConfigurator: SparklingWaterEffectConfigurator,
 
   noConflict: function() {
     if ( window.imageParticleEffects === imageParticleEffects ) {
