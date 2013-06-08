@@ -56,33 +56,45 @@ var Random = {
     };
   })()
 };
-var Particle = function(drawingContext, xMax, yMin, yMax) {
+var Particle = function(drawingContext, options) {
   this.ctx = drawingContext;
+
+  this.setOptions(options);
 
   this.x = 0;
   this.y = 0;
   this.z = 0;
   this.size = 0;
-  this.yMin = yMin;
-  this.yMax = yMax;
-  this.xMax = xMax;
-
-  this.init();
-  this.timeElapsed = parseInt(Random.random(Particle.ANIMATION_TIME));
 };
 Particle.ANIMATION_TIME = 11;
 Particle.prototype.init = function() {
-  this.y = Random.random(this.yMin,this.yMax);
-  this.z = (this.yMax - this.yMin + 1)/(this.y - this.yMin + 1)/(360 - this.yMin);
+  var yMin = this.options.yMin
+    , yMax = this.options.yMax
+    , xMax = this.options.xMax
+    , xMean = this.options.xMean || ( xMax / 2 )
+
+  if (typeof yMin === 'undefined') {
+    throw new Error('Missing required option yMin');
+  }
+  if (typeof yMax === 'undefined') {
+    throw new Error('Missing required option yMax');
+  }
+  if (typeof xMax === 'undefined') {
+    throw new Error('Missing required option xMax');
+  }
+
+
+  this.y = Random.random(yMin, yMax);
+  this.z = (yMax - yMin + 1)/(this.y - yMin + 1)/(yMax - yMin);
   // z is in range (0,1]
   this.z = MathUtil.lerp(1, 30, this.z);
   // z goes from 1 to 50
   this.size = 1.0 / this.z;
   
   if (Random.random(6) < 4) {
-    this.x = 344 + Random.randomNormal(0, this.xMax / 24) / this.z;
+    this.x = xMean + Random.randomNormal(0, xMax / 24) / this.z;
   } else {
-    this.x = 344 + Random.randomNormal(0, this.xMax / 4) / this.z;
+    this.x = xMean + Random.randomNormal(0, xMax / 4) / this.z;
   }
   this.timeElapsed = 0;
 };
@@ -108,21 +120,26 @@ Particle.prototype.draw = function() {
     DrawUtil.ellipse(ctx, x, y, lerp(14 * size, 0, (timeElapsed - ANIMATION_TIME / 2) / (ANIMATION_TIME / 2)), lerp(2 * size, 0, (timeElapsed - ANIMATION_TIME / 2) / (ANIMATION_TIME / 2)));
   }
 };
+Particle.prototype.setOptions = function(options) {
+  this.options = options || {};
+  return this;
+};
 
-var SparklingWaterEffect = function(img) {
+var SparklingWaterEffect = function(img, options) {
   var width = img.offsetWidth
     , height = img.offsetHeight
     , particles = []
     , canvas = document.createElement('canvas')
     , ctx = canvas.getContext('2d')
     , numParticles = 200
-    , frameRate = 12;
+    , frameRate = 12
+    , options = options || {};
 
   canvas.setAttribute('width', width);
   canvas.setAttribute('height', height);
 
   for (var i = 0; i < numParticles; i++) {
-    particles.push(new Particle(ctx, width, 223, height));
+    particles.push(new Particle(ctx));
   }
 
   var next = img.nextSibling
@@ -137,10 +154,19 @@ var SparklingWaterEffect = function(img) {
   this.canvas = canvas;
   this.ctx = ctx;
   this.frameRate = frameRate;
+
+  this.setOptions(options);
 };
 
 SparklingWaterEffect.prototype.startDrawing = function() {
   var self = this;
+
+  for (var i = 0, n = this.particles.length; i < n; i++) {
+    var particle = this.particles[i];
+    particle.init();
+    particle.timeElapsed = parseInt(Random.random(Particle.ANIMATION_TIME));
+  }
+
   var scheduleDraw = function() {
     requestAnimationFrame(draw);
   };
@@ -168,6 +194,20 @@ SparklingWaterEffect.prototype.draw = function() {
     particle.tick();
     particle.draw();
   }
+};
+
+SparklingWaterEffect.prototype.setOptions = function(options) {
+  var options = options || {};
+  var particleOptions = {
+    xMax: this.width,
+    yMin: options.yMin || 0,
+    yMax: options.yMax || this.height
+  };
+  for (var i = 0, n = this.particles.length; i < n; i++) {
+    this.particles[i].setOptions(particleOptions);
+  }
+  this.options = options;
+  return this;
 };
 
 var imageParticleEffects = {
